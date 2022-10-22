@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">LoginProject</string>
+    <string name="login_text_gr">Σύνδεση</string>
+    <string name="user_id_label">UserID</string>
+    <string name="password_label_gr">Κωδικός</string>
+    <string name="show_password_label_gr">Προβολή</string>
+
+    <string name="home_text_label">Περιοδικά</string>
 </resources>
