@@ -1,13 +1,11 @@
-package com.example.loginproject
+package com.example.loginproject.ui.login
 
-import android.app.Dialog
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,13 +13,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -35,62 +29,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import com.example.loginproject.R
+import com.example.loginproject.navigation.Pages
 import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.ui.theme.MyColors
+import com.example.loginproject.viewmodel.LoginViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.regex.Pattern
 
-// Authentication (from joebirch Authentication)
-
-data class AuthenticationState(
-    val userId: String? = null,
-    val password: String? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-) {
-    fun isFormValid(): Boolean {
-        return userId?.isNotEmpty() == true && password?.isNotEmpty() == true
-    }
-}
-
-class AuthenticationViewModel : ViewModel() {
-    val uiState = MutableStateFlow(AuthenticationState())
-
-    private fun updateUserId(userId: String) {
-        uiState.value = uiState.value.copy(
-            userId = userId
-        )
-    }
-
-    private fun updatePassword(password: String) {
-        uiState.value = uiState.value.copy(
-            password = password
-        )
-    }
-}
-
-sealed class AuthenticationEvent {
-    object ToggleAuthenticationMode: AuthenticationEvent()
-
-    class UserIdChanged(val userId: String): AuthenticationEvent()
-
-    class PasswordChanged(val password: String) : AuthenticationEvent()
-}
-
-
 // Base Login Page Composable
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginPage(colors: TextFieldColors = MyColors(), context: Context) {
+fun LoginPage(colors: TextFieldColors = MyColors(),
+              context: Context,
+              viewModel: LoginViewModel,
+              navController: NavController
+) {
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var passwordVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    var credentialError by rememberSaveable { mutableStateOf(true) }
+    var credentialError by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -191,7 +154,7 @@ fun LoginPage(colors: TextFieldColors = MyColors(), context: Context) {
 
                 // Login Button
                 OutlinedButton(
-                    onClick = { credentialError = handleLogin(userId, password, context) },
+                    onClick = { credentialError = handleLogin(userId, password, context, viewModel, navController) },
                     border = BorderStroke(1.dp, GreenMe),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = GreenMe),
@@ -252,27 +215,36 @@ fun LoginPage(colors: TextFieldColors = MyColors(), context: Context) {
     }
 }
 
-fun handleLogin(userId: String, password: String, context: Context) : Boolean {
-    var userIdPattern = "^[A-Z][A-Z][0-9]{4}\$"
-    var isUserIdValid = Pattern.matches(userIdPattern, userId)
+fun handleLogin(userId: String,
+                password: String,
+                context: Context,
+                viewModel: LoginViewModel,
+                navController: NavController) : Boolean {
+    val userIdPattern = "^[A-Z][A-Z][0-9]{4}\$"
+    val isUserIdValid = Pattern.matches(userIdPattern, userId)
 
-    var passwordPattern = "^(?=.*[!@#\$%^()-=+)&+=])(?=.*[A-Z].*[A-Z].*)(?=.*[a-z].*[a-z].*[a-z].*)(?=.*[0-9].*[0-9].*).{8,}$"
-    var isPasswordValid = Pattern.matches(passwordPattern, password)
+    val passwordPattern = "^(?=.*[!@#\$%^()-=+)&+=])(?=.*[A-Z].*[A-Z].*)(?=.*[a-z].*[a-z].*[a-z].*)(?=.*[0-9].*[0-9].*).{8,}$"
+    val isPasswordValid = Pattern.matches(passwordPattern, password)
 
-    if (isPasswordValid && isUserIdValid) {
+    return if (isPasswordValid && isUserIdValid) {
         Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
-        return false
-    } else {
-        return true
-    }
+//        viewModel.uiState.value.isLogged = true
+//        viewModel::doLogin
 
+        // make login request
+
+        navController.navigate(Pages.Books.route)
+        false
+    } else {
+        true
+    }
 }
 
 @Composable
 fun TopLabel(type: String) {
     var text: String = stringResource(R.string.login_text_gr)
-    if (type == "home") {
-        text = stringResource(R.string.home_text_label)
+    if (type == "books") {
+        text = stringResource(R.string.books_text_label)
     }
 
     Surface(

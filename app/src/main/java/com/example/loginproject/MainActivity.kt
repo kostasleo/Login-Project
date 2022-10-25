@@ -1,49 +1,32 @@
 package com.example.loginproject
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.ui.theme.LoginProjectTheme
-import com.example.loginproject.ui.theme.MyColors
-import android.content.Context
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.layout.HorizontalAlignmentLine
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import com.example.loginproject.ui.theme.GreenMe
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import com.example.loginproject.navigation.NavigationScreen
+import com.example.loginproject.ui.login.LoginPage
+import com.example.loginproject.viewmodel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
+
+
+    private val viewModel: LoginViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        var notLoggedIn = true
-
         setContent {
             LoginProjectTheme {
                 // A surface container using the 'background' color from the theme
@@ -51,23 +34,21 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
-
-                    if(notLoggedIn) {
-                        LoginPage(context = applicationContext)
-                    } else {
-                        MainPage()
-                    }
+//                    MainPage(viewModel = AuthenticationViewModel())
+//                    TodoView(vm)
+                    val navController = rememberNavController()
+                    NavigationScreen(viewModel = viewModel, navController = navController)
                 }
             }
         }
     }
 }
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     LoginProjectTheme {
-        LoginPage(context = LocalContext.current)
+//        LoginPage(context = LocalContext.current, viewModel = AuthenticationViewModel(), navController = navC)
     }
 }

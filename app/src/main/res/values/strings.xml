@@ -9,5 +9,15 @@
     <string name="userid_info_gr">2 κεφαλαία ακολουθούμενα απο 4 ψηφία</string>
     <string name="password_info_gr">τουλάχιστον 8 χαρακτήρες (2 κεφαλαία,  3 πεζά, 1 ειδικός χαρακτήρας, 2 νούμερα)</string>
 
-    <string name="home_text_label">Περιοδικά</string>
+    <string name="books_text_label">Περιοδικά</string>
+    <string id="1" name="pdf_image_1">"https://thumbs.dreamstime.com/b/vertical-flat-pastel-color-geometric-triangle-wallpaper-pattern-texture-vector-background-89163406.jpg"</string>
+    <string id="2" name="pdf_image_2">"https://thumbs.dreamstime.com/b/vertical-flat-polygonal-background-smartphone-geometric-shapes-colorful-mosaic-pattern-108409866.jpg"</string>
+    <string id="3" name="pdf_image_3">"https://previews.123rf.com/images/kluva/kluva1903/kluva190300001/122581363-abstract-natural-green-geometric-background-consists-of-triangles-polygonal-vertical-background-.jpg"</string>
+    <string id="4" name="pdf_image_4">"https://as1.ftcdn.net/v2/jpg/01/10/52/26/1000_F_110522666_tR8pvPmBKOL3lRwRcLFFcPwIs4b7fiAO.jpg"</string>
+    <string id="5" name="pdf_image_5">"https://i.pinimg.com/474x/7b/1b/c6/7b1bc67750bf9f5127da99155220bcc1.jpg"</string>
+    <string id="6" name="pdf_image_6">"https://w0.peakpx.com/wallpaper/443/942/HD-wallpaper-blue-geo-2-i1080-abstract-dark-geometric-triangle-vertical-vivid.jpg"</string>
+    <string id="7" name="pdf_image_7">"https://w0.peakpx.com/wallpaper/523/998/HD-wallpaper-aqua-geo-1-i1080-abstract-blue-geometric-green-minimal-simple-teal-triangle-vertical.jpg"</string>
+    <string id="8" name="pdf_image_8">"https://imgs.search.brave.com/XovLVGk8-r9GM8_MEXKrzg6D2XkQh-6fQHLXxmv7b0Y/rs:fit:450:450:1/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzc3LzU2/Lzk3Lzc3NTY5NzI2/NjVkYzBmNmUzODI3/ZTI4MGNjMzQyNmRh/LmpwZw"</string>
+    <string id="9" name="pdf_image_9">"https://imgs.search.brave.com/mK6oiKERPkPAkUHFs-Qw0quibuoMtC-cKjatoVQrCRk/rs:fit:1024:683:1/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vdmVjdG9y/cy9wbHVzLXBhdHRl/cm4tZ2VvbWV0cmlj/LWRlc2lnbi1taW5p/bWFsLWdyYXBoaWMt/Y3Jvc3MtdGV4dHVy/ZS12ZWN0b3ItdmVj/dG9yLWlkOTAzMDg3/OTY4"</string>
+    <string id="10" name="pdf_image_10">"https://imgs.search.brave.com/99PCpQuWWNB0flrzz-egRchigpH5rTm9v-QCapxKVjk/rs:fit:260:280:1/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzg3LzQz/Lzk2Lzg3NDM5NmNi/ZGNiYThkNDZjOTA4/MzBiYTk2ZTA3MTNj/LmpwZw"</string>
 </resources>
