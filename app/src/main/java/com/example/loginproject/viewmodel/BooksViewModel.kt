@@ -14,8 +14,6 @@ enum class BookState {
     DEFAULT, DOWNLOADING, DOWNLOADED
 }
 
-// books state class with variables???
-
 data class Book(
     var id: Int,
     var title: String,
@@ -60,9 +58,6 @@ class BooksViewModel: ViewModel(){
 
     fun changeBookState(book: Book, state: BookState): BookState{
         book.state = state
-//        currentComposer.composition.recompose()
         return book.state
     }
-
-    // change
 }

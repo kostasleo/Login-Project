@@ -39,10 +39,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
-//    val datesList = {items(booksList) { book -> book.} }
 
     var showLoadingPage by remember { mutableStateOf(true)}
-//    var booksViewModel by remember { mutableStateOf(bookViewModel.booksList)}
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -71,9 +69,7 @@ fun LoadingPage(bookViewModel: BooksViewModel, onTimeout: () -> Unit){
 
     LaunchedEffect(Unit, block = {
         bookViewModel.getBooksList()
-//        delay(2_000L)
         currentOnTimeout()
-        Log.e("apicall", "Called API")
     })
 
     Text(
@@ -91,21 +87,16 @@ fun LoadingPage(bookViewModel: BooksViewModel, onTimeout: () -> Unit){
 fun LazyBooks(bookViewModel: BooksViewModel) {
 
     val booksList = bookViewModel.booksList
-//    val filteredList = bookViewModel.getBooksByYear(bookViewModel.booksList,"2020")
-
-    val state = rememberLazyListState()
 
     Column(modifier = Modifier.padding(start = 38.dp, end = 18.dp)) {
 
         if (booksList != null) {
-//            LazyColumn(state = state,
             LazyVerticalGrid(
                 GridCells.Adaptive(140.dp),
                 verticalArrangement = Arrangement.spacedBy(26.dp),
                 horizontalArrangement = Arrangement.spacedBy(26.dp),
                 modifier = Modifier
                     .fillMaxHeight()
-//                            .padding(38.dp)
             ) {
                 item(span = {GridItemSpan(2)}) {
                     YearLabel(year = "2020")
@@ -160,14 +151,11 @@ fun YearLabel(year:String) {
 @Composable
 fun Book(bookViewModel: BooksViewModel, book: Book) {
 
-//    bookViewModel.changeBookState(book, BookState.DEFAULT)
     var bookState by rememberSaveable {
         mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))}
 
-
     val num = (0..9).random()
-//    val url:String = stringResource(id = num)
-    val urls = listOf<String>(
+    val urls = listOf(
         stringResource(R.string.pdf_image_1),
         stringResource(R.string.pdf_image_2),
         stringResource(R.string.pdf_image_3),
@@ -224,7 +212,6 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                 modifier = Modifier
                     .height(14.dp)
                     .width(140.dp)
-//                    .padding(top = 0.dp)
             )
         }
         Text(
@@ -236,110 +223,5 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
             color = Color.White,
             maxLines = 1
         )
-
-//
-//        Spacer(modifier = Modifier.height(20.dp))
     }
 }
-
-//@Composable
-//fun ShowBooks(bookViewModel: BooksViewModel, year: String) {
-//    val filteredList = bookViewModel.getBooksByYear(bookViewModel.booksList, "2020")
-//
-//    if (bookViewModel.errorMessage.isEmpty()) {
-//        LazyColumn() {
-//            items(filteredList) { book ->
-//                Column {
-//                    if ("2019" in book.date_released.toString()) {
-//                        Text(
-//                            text = book.date_released.toString(),
-////                                    text = "Book",
-//                            modifier = Modifier.fillMaxWidth(),
-//                            color = Color.White
-//                        )
-////                                Image(painter = book.image_url, contentDescription = )
-//                        Spacer(modifier = Modifier.height(20.dp))
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
-
-//@Composable
-//fun TodoView(vm: TodoViewModel) {
-//
-//    val todoList = vm.todoList
-//
-//    LaunchedEffect(Unit, block = {
-//        vm.getTodoList()
-//    })
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Row {
-//                        Text("Todos")
-//                    }
-//                })
-//        },
-//        content = {
-//            if (vm.errorMessage.isEmpty()) {
-//                Column(modifier = Modifier.padding(16.dp)) {
-////                    if (todoList != null) {
-//                        LazyColumn(modifier = Modifier.fillMaxHeight()) {
-//                            items(vm.todoList!!) { todo ->
-//                                Column {
-//                                    Row(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(16.dp),
-//                                        horizontalArrangement = Arrangement.SpaceBetween
-//                                    ) {
-//                                        Box(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth()
-//                                                .padding(0.dp, 0.dp, 16.dp, 0.dp)
-//                                        ) {
-//                                            Text(
-//                                                todo.title,
-//                                                maxLines = 1,
-//                                                overflow = TextOverflow.Ellipsis
-//                                            )
-//                                        }
-//                                        Spacer(modifier = Modifier.width(16.dp))
-//                                        Checkbox(checked = todo.completed, onCheckedChange = null)
-//                                    }
-//                                    Divider()
-//                                }
-//                            }
-////                        }
-//                    }
-//                }
-//            } else {
-//                Text(vm.errorMessage)
-//            }
-//        }
-//    )
-//}
-
-
-
-//@Composable
-//fun MainPage(viewModel: AuthenticationViewModel) {
-//
-//    val navController = rememberNavController()
-//
-//    NavHost(navController = navController, startDestination = "login" ){
-//        composable("login") {
-//            if(viewModel.isLoggedTho.value){
-//                navController.navigate("home")
-//            } else {
-//                LoginPage(viewModel = AuthenticationViewModel(), context = LocalContext.current)
-//            }
-//        }
-//        composable("home") { HomePage() }
-//    }
-//}

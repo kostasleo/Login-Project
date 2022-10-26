@@ -151,9 +151,8 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                 // Login Button
                 OutlinedButton(
                     onClick = {
-//                        credentialError = handleLogin(userId, password, context, viewModel, navController)
-                        navController.navigate(Pages.Books.route)
-                              },
+                        credentialError = handleLogin(userId, password, context, viewModel, navController)
+                    },
                     border = BorderStroke(1.dp, GreenMe),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = GreenMe),
@@ -204,9 +203,7 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                                     )
                                 }
 
-                        },
-                        modifier = Modifier
-//                            .padding(bottom = pad.dp)
+                        }
                     )
                 }
             }
@@ -218,7 +215,8 @@ fun handleLogin(userId: String,
                 password: String,
                 context: Context,
                 viewModel: LoginViewModel,
-                navController: NavController) : Boolean {
+                navController: NavController) : Boolean
+{
     val userIdPattern = "^[A-Z][A-Z][0-9]{4}\$"
     val isUserIdValid = Pattern.matches(userIdPattern, userId)
 
@@ -226,9 +224,6 @@ fun handleLogin(userId: String,
     val isPasswordValid = Pattern.matches(passwordPattern, password)
 
     if (isPasswordValid && isUserIdValid) {
-        Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
-//        viewModel.uiState.value.isLogged = true
-//        viewModel::doLogin
 
         viewModel.setUserId(userId)
         viewModel.setPassword(password)
@@ -236,6 +231,7 @@ fun handleLogin(userId: String,
         // make login request
 //        viewModel.doLogin()
         if(userId == "TH1234" && password == "3NItas1!"){
+            Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
             navController.navigate(Pages.Books.route)
             return false
         }

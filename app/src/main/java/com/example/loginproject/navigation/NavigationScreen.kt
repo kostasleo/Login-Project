@@ -16,10 +16,8 @@ import com.example.loginproject.viewmodel.LoginViewModel
 @Composable
 fun NavigationScreen(navController: NavHostController,
                      loginViewModel: LoginViewModel,
-                     booksViewModel: BooksViewModel){
-
-//    val navController = rememberNavController()
-//    val vm = LoginState.current
+                     booksViewModel: BooksViewModel)
+{
 
     val loggedIn = loginViewModel.isLogged()
 
@@ -30,21 +28,11 @@ fun NavigationScreen(navController: NavHostController,
     {
         composable(route = Pages.Login.route)
         {
-//            if (loginViewModel.isSuccessLoading()) {
-//                LaunchedEffect(key1 = Unit) {
-//                    navController.navigate(route = Pages.Books.route) {
-//                        popUpTo(route = Pages.Login.route) {
-//                            inclusive = true
-//                        }
-//                    }
-//                }
-//            } else {
-                LoginPage(
-                    context = LocalContext.current,
-                    viewModel = LoginViewModel(),
-                    navController = navController
-                )
-//            }
+            LoginPage(
+                context = LocalContext.current,
+                viewModel = LoginViewModel(),
+                navController = navController
+            )
         }
         composable(route = Pages.Books.route) {
             BooksPage(

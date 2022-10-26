@@ -28,25 +28,20 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel: LoginViewModel by viewModels()
     private val booksViewModel: BooksViewModel by viewModels()
 
-    //private val loginState by viewModels<LoginViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LoginProjectTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
-//                    CompositionLocalProvider(LoginState provides loginState) {
                         NavigationScreen(
                             navController = navController,
                             loginViewModel = loginViewModel,
                             booksViewModel = booksViewModel
                         )
-//                    }
                 }
             }
         }
@@ -57,7 +52,5 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    LoginProjectTheme {
-//        LoginPage(context = LocalContext.current, viewModel = AuthenticationViewModel(), navController = navC)
-    }
+    LoginProjectTheme {}
 }
