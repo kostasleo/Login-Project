@@ -18,7 +18,6 @@ fun NavigationScreen(navController: NavHostController,
                      loginViewModel: LoginViewModel,
                      booksViewModel: BooksViewModel)
 {
-
     val loggedIn = loginViewModel.isLogged()
 
     val start = if(loggedIn) Pages.Books.route else Pages.Login.route
@@ -30,14 +29,14 @@ fun NavigationScreen(navController: NavHostController,
         {
             LoginPage(
                 context = LocalContext.current,
-                viewModel = LoginViewModel(),
+                viewModel = loginViewModel,
                 navController = navController
             )
         }
         composable(route = Pages.Books.route) {
             BooksPage(
                 navController = navController,
-                bookViewModel = BooksViewModel())
+                bookViewModel = booksViewModel)
         }
     }
 }

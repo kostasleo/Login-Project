@@ -5,21 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loginproject.api.ApiConstants.TOKEN
 import com.example.loginproject.api.ApiService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.http.Url
 import java.net.URL
 import java.util.Date
 
 enum class BookState {
-    DEFAULT, DOWNLOADING, DOWNLOADED
+    DEFAULT, DOWNLOADING1, DOWNLOADING2, DOWNLOADED
 }
 
 data class Book(
-    var id: Int,
-    var title: String,
-    var image_url: String,
+    var id: Int = 1,
+    var title: String = "",
+    var image_url: String = "",
     var date_released: Date,
-    var pdf_url: String,
+    var pdf_url: String = "",
 
     var state: BookState = BookState.DEFAULT,
     var pdfId: Int

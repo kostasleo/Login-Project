@@ -6,16 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loginproject.api.ApiService
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class LoginState(
-    var userId: String,
-    var password: String,
+    var userId: String = "",
+    var password: String = "",
 )
 
 class LoginViewModel : ViewModel() {
 
-    private val loginState = MutableStateFlow(LoginState("", ""))
+    private val _loginState = MutableStateFlow(LoginState())
+    val loginState : StateFlow<LoginState> = _loginState.asStateFlow()
 
     private val isSuccessLoading = mutableStateOf(value = false)
     private val isLoggedIn = mutableStateOf(value = false)

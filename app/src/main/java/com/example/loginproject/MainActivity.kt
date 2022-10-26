@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.loginproject.navigation.NavigationScreen
+import com.example.loginproject.ui.home.BooksPage
 import com.example.loginproject.ui.login.LoginPage
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.viewmodel.LoginState
@@ -37,11 +38,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     val navController = rememberNavController()
-                        NavigationScreen(
-                            navController = navController,
-                            loginViewModel = loginViewModel,
-                            booksViewModel = booksViewModel
-                        )
+                    NavigationScreen(
+                        navController = navController,
+                        loginViewModel = loginViewModel,
+                        booksViewModel = booksViewModel
+                    )
                 }
             }
         }
@@ -52,5 +53,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    LoginProjectTheme {}
+    LoginProjectTheme {
+        BooksPage(navController = rememberNavController(), bookViewModel = BooksViewModel())
+    }
 }

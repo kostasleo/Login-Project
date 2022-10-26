@@ -1,18 +1,25 @@
 package com.example.loginproject.ui.home
 
 import android.annotation.SuppressLint
+import android.graphics.Color.alpha
 import android.util.Log
+import android.widget.ImageButton
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -20,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -34,51 +42,99 @@ import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.viewmodel.Book
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.R
+import com.example.loginproject.ui.theme.LoginProjectTheme
 import com.example.loginproject.viewmodel.BookState
+import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
 
     var showLoadingPage by remember { mutableStateOf(true)}
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        TopLabel(type = "books")
-
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = DarkGrayMe
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-
-                if (showLoadingPage) {
-                    LoadingPage(bookViewModel = bookViewModel, onTimeout = { showLoadingPage = false })
-                } else {
-                    LazyBooks(bookViewModel)
-                }
-            }
-        }
+    LaunchedEffect(Unit, block = {
+        bookViewModel.getBooksList()
+//        currentOnTimeout()
+    })
+    
+    Scaffold(
+        topBar = {TopLabel(type = "books")},
+        bottomBar = {
+//            BottomAppBar(modifier = Modifier.height(105.dp),
+//                cutoutShape = MaterialTheme.shapes.small.copy(
+//                    CornerSize(percent = 50)
+//                )
+//            ) {
+            TabBar(navController = navController)
+//            }
+        })
+    {
+        LazyBooks(bookViewModel = bookViewModel)
     }
 }
 
 @Composable
-fun LoadingPage(bookViewModel: BooksViewModel, onTimeout: () -> Unit){
+fun TabBar(navController: NavController) {
+    // state of pressed button
+    var pagesButtonImage by rememberSaveable {
+        mutableStateOf(R.drawable.ic_book_sel)
+    }
 
-    val currentOnTimeout by rememberUpdatedState(onTimeout)
-
-    LaunchedEffect(Unit, block = {
-        bookViewModel.getBooksList()
-        currentOnTimeout()
-    })
-
-    Text(
-        text = "Loading",
-        color = Color.White,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(50.dp)
-    )
+    Surface(
+        color = Color.White.copy(alpha =0.0f),
+        modifier = Modifier
+            .height(105.dp)
+            .fillMaxWidth()
+    ) {
+        Box(modifier = Modifier){
+            Image(painter = painterResource(R.drawable.tabs_bg),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth())
+            Image(painter = painterResource(R.drawable.tabs_wave),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth())
+            IconButton(
+                onClick = { pagesButtonImage = R.drawable.ic_book },
+                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
+            {
+                Icon(
+                    painter = painterResource(pagesButtonImage),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(30.dp)
+                )
+            }
+            IconButton(
+                onClick = { },
+                modifier = Modifier
+                    .padding(top = 18.dp, start = 160.dp)
+                    .size(80.dp))
+            {
+                Image(
+                    painter = painterResource(R.drawable.btn_play),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp),
+//                    tint = Color.White.copy(alpha =0.0f)
+                )
+            }
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
+            {
+                Icon(
+                    painter = painterResource(R.drawable.ic_settings),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(30.dp)
+                )
+            }
+        }
+    }
 }
 
 
@@ -132,6 +188,7 @@ fun LazyBooks(bookViewModel: BooksViewModel) {
         } else {
             Text(bookViewModel.errorMessage)
         }
+        YearLabel(year = "2022")
     }
 }
 
@@ -185,10 +242,18 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     .height(180.dp)
                     .width(140.dp)
             )
+            val scope = rememberCoroutineScope()
             if (bookState == BookState.DEFAULT) {
                 IconButton(
                     onClick = {
-                        bookState = bookViewModel.changeBookState(book,BookState.DOWNLOADING) },
+                        scope.launch {
+                            bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADING1)
+                            delay(2000)
+                            bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADING2)
+                            delay(2000)
+                            bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADED)
+                        }
+                    },
                     modifier = Modifier
                         .padding(top = 70.dp, start = 45.dp)
                         .height(50.dp)
@@ -204,16 +269,45 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     )
                 }
             }
+            if (book.state == BookState.DOWNLOADING1) {
+                val image = painterResource(R.drawable.downloading1)
+                Box(modifier = Modifier.padding(top = 166.dp)) {
+                    Image(
+                        painter = image,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(14.dp)
+                            .width(140.dp)
+
+                    )
+                }
+            }
+            if (book.state == BookState.DOWNLOADING2) {
+                val image = painterResource(R.drawable.downloading2)
+                Box(modifier = Modifier.padding(top = 166.dp)) {
+                    Image(
+                        painter = image,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(14.dp)
+                            .width(140.dp)
+                    )
+                }
+            }
+            if (book.state == BookState.DOWNLOADED) {
+                Box(modifier = Modifier.padding(top = 156.dp, start = 115.dp)){
+                    Icon(
+                        painter = painterResource(R.drawable.ic_check_w),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(20.dp),
+                        tint = Color.White
+                    )
+                }
+            }
         }
 
-        if (book.state == BookState.DOWNLOADING) {
-            Image(painter = painterResource(R.drawable.downloading2),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(14.dp)
-                    .width(140.dp)
-            )
-        }
         Text(
             text = book.title,
             modifier = Modifier
@@ -225,3 +319,34 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         )
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun DefaultPreview() {
+    LoginProjectTheme {
+//        BooksPage(navController = rememberNavController(), bookViewModel = BooksViewModel())
+//        Book(bookViewModel = BooksViewModel(), book = Book(bookViewModel.))
+    }
+}
+
+
+//    Column(modifier = Modifier.fillMaxSize()) {
+//
+//        TopLabel(type = "books")
+//
+//
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = DarkGrayMe
+//        ) {
+//            Column(modifier = Modifier.fillMaxSize()) {
+//
+//                if (showLoadingPage) {
+//                    LoadingPage(bookViewModel = bookViewModel, onTimeout = { showLoadingPage = false })
+//                } else {
+//                    LazyBooks(bookViewModel)
+//                }
+//
+//            }
+//        }
+//    }
