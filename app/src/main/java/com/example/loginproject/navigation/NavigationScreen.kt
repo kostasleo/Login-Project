@@ -21,7 +21,7 @@ fun NavigationScreen(navController: NavHostController,
 
     val loggedIn = loginViewModel.isLogged()
 
-    val start = if(!loggedIn) Pages.Books.route else Pages.Login.route
+    val start = if(loggedIn) Pages.Books.route else Pages.Login.route
 
     NavHost(navController = navController,
             startDestination = start)
