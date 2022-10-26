@@ -1,12 +1,14 @@
 package com.example.loginproject.ui.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +17,7 @@ import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,14 +35,14 @@ import com.example.loginproject.viewmodel.Book
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.R
 import com.example.loginproject.viewmodel.BookState
+import kotlinx.coroutines.delay
 
 @Composable
 fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
 //    val datesList = {items(booksList) { book -> book.} }
 
-    LaunchedEffect(Unit, block = {
-        bookViewModel.getBooksList()
-    })
+    var showLoadingPage by remember { mutableStateOf(true)}
+//    var booksViewModel by remember { mutableStateOf(bookViewModel.booksList)}
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -50,15 +53,37 @@ fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
             color = DarkGrayMe
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                LazyBooks(bookViewModel)
+
+                if (showLoadingPage) {
+                    LoadingPage(bookViewModel = bookViewModel, onTimeout = { showLoadingPage = false })
+                } else {
+                    LazyBooks(bookViewModel)
+                }
             }
-
-
         }
-
     }
 }
 
+@Composable
+fun LoadingPage(bookViewModel: BooksViewModel, onTimeout: () -> Unit){
+
+    val currentOnTimeout by rememberUpdatedState(onTimeout)
+
+    LaunchedEffect(Unit, block = {
+        bookViewModel.getBooksList()
+//        delay(2_000L)
+        currentOnTimeout()
+        Log.e("apicall", "Called API")
+    })
+
+    Text(
+        text = "Loading",
+        color = Color.White,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(50.dp)
+    )
+}
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,7 +91,6 @@ fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
 fun LazyBooks(bookViewModel: BooksViewModel) {
 
     val booksList = bookViewModel.booksList
-
 //    val filteredList = bookViewModel.getBooksByYear(bookViewModel.booksList,"2020")
 
     val state = rememberLazyListState()
@@ -137,8 +161,9 @@ fun YearLabel(year:String) {
 fun Book(bookViewModel: BooksViewModel, book: Book) {
 
 //    bookViewModel.changeBookState(book, BookState.DEFAULT)
-    var bookState by remember {
+    var bookState by rememberSaveable {
         mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))}
+
 
     val num = (0..9).random()
 //    val url:String = stringResource(id = num)
@@ -155,6 +180,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         stringResource(R.string.pdf_image_10),
     )
 
+    val pdfImage by rememberSaveable{ mutableStateOf(num) }
 
     Column(
         modifier = Modifier
@@ -164,18 +190,17 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
     {
         Box(modifier = Modifier){
             Image(
-                painter = rememberAsyncImagePainter(urls[num]),
+                painter = rememberAsyncImagePainter(urls[pdfImage]),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .height(180.dp)
                     .width(140.dp)
             )
-            if (book.state == BookState.DEFAULT) {
+            if (bookState == BookState.DEFAULT) {
                 IconButton(
                     onClick = {
-                        bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADING)
-                              },
+                        bookState = bookViewModel.changeBookState(book,BookState.DOWNLOADING) },
                     modifier = Modifier
                         .padding(top = 70.dp, start = 45.dp)
                         .height(50.dp)
@@ -191,10 +216,9 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     )
                 }
             }
-
         }
 
-        if (book.state == BookState.DEFAULT) {
+        if (book.state == BookState.DOWNLOADING) {
             Image(painter = painterResource(R.drawable.downloading2),
                 contentDescription = null,
                 modifier = Modifier

@@ -10,21 +10,46 @@ import androidx.navigation.compose.rememberNavController
 import com.example.loginproject.ui.home.BooksPage
 import com.example.loginproject.ui.login.LoginPage
 import com.example.loginproject.viewmodel.BooksViewModel
+import com.example.loginproject.viewmodel.LoginState
 import com.example.loginproject.viewmodel.LoginViewModel
 
 @Composable
-fun NavigationScreen(viewModel: LoginViewModel, navController: NavHostController){
+fun NavigationScreen(navController: NavHostController,
+                     loginViewModel: LoginViewModel,
+                     booksViewModel: BooksViewModel){
 
-    NavHost(navController = navController, startDestination = Pages.Books.route) {
-        composable(route = Pages.Login.route) {
-            LoginPage(context = LocalContext.current, viewModel = LoginViewModel(), navController = navController)
+//    val navController = rememberNavController()
+//    val vm = LoginState.current
+
+    val loggedIn = loginViewModel.isLogged()
+
+    val start = if(!loggedIn) Pages.Books.route else Pages.Login.route
+
+    NavHost(navController = navController,
+            startDestination = start)
+    {
+        composable(route = Pages.Login.route)
+        {
+//            if (loginViewModel.isSuccessLoading()) {
+//                LaunchedEffect(key1 = Unit) {
+//                    navController.navigate(route = Pages.Books.route) {
+//                        popUpTo(route = Pages.Login.route) {
+//                            inclusive = true
+//                        }
+//                    }
+//                }
+//            } else {
+                LoginPage(
+                    context = LocalContext.current,
+                    viewModel = LoginViewModel(),
+                    navController = navController
+                )
+//            }
         }
         composable(route = Pages.Books.route) {
-//            if(viewModel.isLoggedIn.value){
-                BooksPage(navController = navController, bookViewModel = BooksViewModel())
-//            } else {
-//                navController.navigate(route = Pages.Login.route)
-//            }
+            BooksPage(
+                navController = navController,
+                bookViewModel = BooksViewModel())
         }
     }
 }

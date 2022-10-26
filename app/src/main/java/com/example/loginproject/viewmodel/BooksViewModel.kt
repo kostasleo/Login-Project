@@ -14,7 +14,7 @@ enum class BookState {
     DEFAULT, DOWNLOADING, DOWNLOADED
 }
 
-sealed class
+// books state class with variables???
 
 data class Book(
     var id: Int,
@@ -22,7 +22,9 @@ data class Book(
     var image_url: String,
     var date_released: Date,
     var pdf_url: String,
-    var state: BookState = BookState.DEFAULT
+
+    var state: BookState = BookState.DEFAULT,
+    var pdfId: Int
 )
 
 class BooksViewModel: ViewModel(){
@@ -30,13 +32,16 @@ class BooksViewModel: ViewModel(){
     var errorMessage: String by mutableStateOf("")
     val booksList: List<Book>?
         get() = _booksList
+    var isLoadingBooks by mutableStateOf(false)
 
     fun getBooksList() {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
             try {
+                isLoadingBooks = true
                 _booksList.clear()
                 _booksList.addAll(apiService.getBooks(token = "Bearer $TOKEN"))
+                isLoadingBooks = false
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
@@ -58,4 +63,6 @@ class BooksViewModel: ViewModel(){
 //        currentComposer.composition.recompose()
         return book.state
     }
+
+    // change
 }

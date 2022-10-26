@@ -1,5 +1,6 @@
 package com.example.loginproject
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,12 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.loginproject.navigation.NavigationScreen
 import com.example.loginproject.ui.login.LoginPage
+import com.example.loginproject.viewmodel.BooksViewModel
+import com.example.loginproject.viewmodel.LoginState
 import com.example.loginproject.viewmodel.LoginViewModel
 
 class MainActivity : ComponentActivity() {
 
+    private val loginViewModel: LoginViewModel by viewModels()
+    private val booksViewModel: BooksViewModel by viewModels()
 
-    private val viewModel: LoginViewModel by viewModels()
+    //private val loginState by viewModels<LoginViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +39,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-//                    MainPage(viewModel = AuthenticationViewModel())
-//                    TodoView(vm)
                     val navController = rememberNavController()
-                    NavigationScreen(viewModel = viewModel, navController = navController)
+//                    CompositionLocalProvider(LoginState provides loginState) {
+                        NavigationScreen(
+                            navController = navController,
+                            loginViewModel = loginViewModel,
+                            booksViewModel = booksViewModel
+                        )
+//                    }
                 }
             }
         }

@@ -28,7 +28,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.loginproject.R
 import com.example.loginproject.navigation.Pages
@@ -36,10 +35,7 @@ import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.ui.theme.MyColors
 import com.example.loginproject.viewmodel.LoginViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.regex.Pattern
-
-// Base Login Page Composable
 
 @Composable
 fun LoginPage(colors: TextFieldColors = MyColors(),
@@ -154,7 +150,10 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
 
                 // Login Button
                 OutlinedButton(
-                    onClick = { credentialError = handleLogin(userId, password, context, viewModel, navController) },
+                    onClick = {
+//                        credentialError = handleLogin(userId, password, context, viewModel, navController)
+                        navController.navigate(Pages.Books.route)
+                              },
                     border = BorderStroke(1.dp, GreenMe),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = GreenMe),
@@ -226,17 +225,26 @@ fun handleLogin(userId: String,
     val passwordPattern = "^(?=.*[!@#\$%^()-=+)&+=])(?=.*[A-Z].*[A-Z].*)(?=.*[a-z].*[a-z].*[a-z].*)(?=.*[0-9].*[0-9].*).{8,}$"
     val isPasswordValid = Pattern.matches(passwordPattern, password)
 
-    return if (isPasswordValid && isUserIdValid) {
+    if (isPasswordValid && isUserIdValid) {
         Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
 //        viewModel.uiState.value.isLogged = true
 //        viewModel::doLogin
 
-        // make login request
+        viewModel.setUserId(userId)
+        viewModel.setPassword(password)
 
-        navController.navigate(Pages.Books.route)
-        false
+        // make login request
+//        viewModel.doLogin()
+        if(userId == "TH1234" && password == "3NItas1!"){
+            navController.navigate(Pages.Books.route)
+            return false
+        }
+        // navigate to books
+//        if(viewModel.isLogged()){
+//      { launchSingleTop = true }
+        return true
     } else {
-        true
+        return true
     }
 }
 
