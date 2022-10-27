@@ -1,4 +1,7 @@
 <resources>
+    <string name="books">books</string>
+    <string name="settings">settings</string>
+
     <string name="app_name">LoginProject</string>
     <string name="login_text_gr">Σύνδεση</string>
     <string name="user_id_label">UserID</string>
@@ -20,4 +23,6 @@
     <string id="8" name="pdf_image_8">"https://imgs.search.brave.com/XovLVGk8-r9GM8_MEXKrzg6D2XkQh-6fQHLXxmv7b0Y/rs:fit:450:450:1/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzc3LzU2/Lzk3Lzc3NTY5NzI2/NjVkYzBmNmUzODI3/ZTI4MGNjMzQyNmRh/LmpwZw"</string>
     <string id="9" name="pdf_image_9">"https://imgs.search.brave.com/mK6oiKERPkPAkUHFs-Qw0quibuoMtC-cKjatoVQrCRk/rs:fit:1024:683:1/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vdmVjdG9y/cy9wbHVzLXBhdHRl/cm4tZ2VvbWV0cmlj/LWRlc2lnbi1taW5p/bWFsLWdyYXBoaWMt/Y3Jvc3MtdGV4dHVy/ZS12ZWN0b3ItdmVj/dG9yLWlkOTAzMDg3/OTY4"</string>
     <string id="10" name="pdf_image_10">"https://imgs.search.brave.com/99PCpQuWWNB0flrzz-egRchigpH5rTm9v-QCapxKVjk/rs:fit:260:280:1/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzg3LzQz/Lzk2Lzg3NDM5NmNi/ZGNiYThkNDZjOTA4/MzBiYTk2ZTA3MTNj/LmpwZw"</string>
+
+    <string name="settings_text_label">Ρυθμίσεις</string>
 </resources>

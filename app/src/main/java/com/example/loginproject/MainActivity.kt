@@ -23,11 +23,13 @@ import com.example.loginproject.ui.login.LoginPage
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.viewmodel.LoginState
 import com.example.loginproject.viewmodel.LoginViewModel
+import com.example.loginproject.viewmodel.NavBarViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels()
     private val booksViewModel: BooksViewModel by viewModels()
+    private val navBarViewModel: NavBarViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -250,6 +250,8 @@ fun TopLabel(type: String) {
     var text: String = stringResource(R.string.login_text_gr)
     if (type == "books") {
         text = stringResource(R.string.books_text_label)
+    } else if (type == "settings") {
+        text = stringResource(R.string.settings_text_label)
     }
 
     Surface(

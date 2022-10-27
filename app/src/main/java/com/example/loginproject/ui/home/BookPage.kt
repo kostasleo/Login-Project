@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.ImageButton
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -39,11 +41,11 @@ import coil.compose.rememberImagePainter
 import com.example.loginproject.ui.login.LoginPage
 import com.example.loginproject.ui.login.TopLabel
 import com.example.loginproject.ui.theme.DarkGrayMe
-import com.example.loginproject.viewmodel.Book
-import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.R
+import com.example.loginproject.navigation.Pages
+import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.ui.theme.LoginProjectTheme
-import com.example.loginproject.viewmodel.BookState
+import com.example.loginproject.viewmodel.*
 import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -59,84 +61,93 @@ fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
     })
     
     Scaffold(
-        topBar = {TopLabel(type = "books")},
+        topBar = {
+            TopLabel(type = "books") },
         bottomBar = {
-//            BottomAppBar(modifier = Modifier.height(105.dp),
-//                cutoutShape = MaterialTheme.shapes.small.copy(
-//                    CornerSize(percent = 50)
-//                )
-//            ) {
-            TabBar(navController = navController)
-//            }
-        })
-    {
+            TabBar(navController = navController, navBarViewModel = NavBarViewModel()) }
+    ){
         LazyBooks(bookViewModel = bookViewModel)
     }
 }
 
 @Composable
-fun TabBar(navController: NavController) {
-    // state of pressed button
-    var pagesButtonImage by rememberSaveable {
-        mutableStateOf(R.drawable.ic_book_sel)
-    }
+fun TabBar(navController: NavController, navBarViewModel: NavBarViewModel) {
+    var selectedPage by remember { mutableStateOf(0) }
+    val items = listOf(
+        Screen.Books,
+        Screen.Settings
+    )
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(104.dp)) {
+        // Tabs Bg image and wave image
+        Image(
+            painter = painterResource(R.drawable.tabs_bg),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Image(
+            painter = painterResource(R.drawable.tabs_wave),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
+        )
+        BottomNavigation(
+            backgroundColor = Color.Transparent,
+            modifier = Modifier.fillMaxSize(),
+            elevation = 0.dp
+        ){
 
-    Surface(
-        color = Color.White.copy(alpha =0.0f),
-        modifier = Modifier
-            .height(105.dp)
-            .fillMaxWidth()
-    ) {
-        Box(modifier = Modifier){
-            Image(painter = painterResource(R.drawable.tabs_bg),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth())
-            Image(painter = painterResource(R.drawable.tabs_wave),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth())
-            IconButton(
-                onClick = { pagesButtonImage = R.drawable.ic_book },
-                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
-            {
-                Icon(
-                    painter = painterResource(pagesButtonImage),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(30.dp)
+                BottomNavigationItem(
+                    selected = selectedPage == 0,
+                    selectedContentColor = GreenMe,
+                    unselectedContentColor = DarkGrayMe,
+                    onClick = { navController.navigate(Pages.Books.route) {launchSingleTop = true} },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_book),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(30.dp)
+                                .width(30.dp)
+                        )
+                    },
+//                modifier = Modifier.clickable(
+//                    interactionSource = MutableInteractionSource(),
+//                    indication = null
                 )
-            }
-            IconButton(
-                onClick = { },
-                modifier = Modifier
-                    .padding(top = 18.dp, start = 160.dp)
-                    .size(80.dp))
-            {
-                Image(
-                    painter = painterResource(R.drawable.btn_play),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp),
+                BottomNavigationItem(
+                    selected = true,
+                    onClick = {},
+                    icon = {
+                        Image(
+                            painter = painterResource(R.drawable.btn_pause),
+                            contentDescription = null,
+                            modifier = Modifier.size(80.dp),
 //                    tint = Color.White.copy(alpha =0.0f)
+                        )
+                    }
                 )
-            }
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
-            {
-                Icon(
-                    painter = painterResource(R.drawable.ic_settings),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(30.dp)
+                BottomNavigationItem(
+                    selected = selectedPage == 1,
+                    selectedContentColor = GreenMe,
+                    unselectedContentColor = DarkGrayMe,
+                    onClick = { navController.navigate(Pages.Settings.route){launchSingleTop = true} },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(30.dp)
+                                .width(30.dp)
+                        )
+                    }
                 )
             }
         }
-    }
+//    }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -248,9 +259,9 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     onClick = {
                         scope.launch {
                             bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADING1)
-                            delay(2000)
+                            delay(1200)
                             bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADING2)
-                            delay(2000)
+                            delay(1200)
                             bookState = bookViewModel.changeBookState(book, BookState.DOWNLOADED)
                         }
                     },
@@ -278,7 +289,6 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                         modifier = Modifier
                             .height(14.dp)
                             .width(140.dp)
-
                     )
                 }
             }
@@ -295,15 +305,26 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                 }
             }
             if (book.state == BookState.DOWNLOADED) {
-                Box(modifier = Modifier.padding(top = 156.dp, start = 115.dp)){
+                Box(modifier = Modifier.padding(top = 130.dp, start = 91.dp)){
+                    Image(
+                        painter = painterResource(R.drawable.downloaded_bg),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(50.dp)
+                    )
+                    Box(modifier = Modifier.padding(top = 26.dp, start = 24.dp)){
+
                     Icon(
                         painter = painterResource(R.drawable.ic_check_w),
                         contentDescription = null,
                         modifier = Modifier
                             .height(20.dp)
                             .width(20.dp),
-                        tint = Color.White
+                        tint = Color.White,
                     )
+                    }
+
                 }
             }
         }
@@ -328,6 +349,75 @@ fun DefaultPreview() {
 //        Book(bookViewModel = BooksViewModel(), book = Book(bookViewModel.))
     }
 }
+
+
+@Composable
+fun TabBar1(navController: NavController, navBarViewModel: NavBarViewModel) {
+    // state of pressed button
+    var selectedPage by remember { mutableStateOf(0) }
+
+    Surface(
+        color = Color.White.copy(alpha =0.0f),
+        modifier = Modifier
+            .height(105.dp)
+            .fillMaxWidth()
+    ) {
+        Box(modifier = Modifier){
+            // Tabs Bg image and wave image
+            Image(painter = painterResource(R.drawable.tabs_bg),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth())
+            Image(painter = painterResource(R.drawable.tabs_wave),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth())
+
+            // Buttons
+
+            IconButton(
+                onClick = {  },
+                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
+            {
+                Icon(
+                    painter = painterResource(R.drawable.ic_book),
+                    contentDescription = null,
+                    tint = GreenMe,
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(30.dp)
+                )
+            }
+            IconButton(
+                onClick = { },
+                modifier = Modifier
+                    .padding(top = 18.dp, start = 160.dp)
+                    .size(80.dp))
+            {
+                Image(
+                    painter = painterResource(R.drawable.btn_pause),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp),
+//                    tint = Color.White.copy(alpha =0.0f)
+                )
+            }
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
+            {
+                Icon(
+                    painter = painterResource(R.drawable.ic_settings_sel),
+                    contentDescription = null,
+                    tint = DarkGrayMe,
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(30.dp)
+                )
+            }
+        }
+    }
+}
+
 
 
 //    Column(modifier = Modifier.fillMaxSize()) {
