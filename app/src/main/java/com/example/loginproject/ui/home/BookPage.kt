@@ -53,12 +53,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
 
-    var showLoadingPage by remember { mutableStateOf(true)}
+//    var showLoadingPage by remember { mutableStateOf(true)}
 
-    LaunchedEffect(Unit, block = {
-        bookViewModel.getBooksList()
-//        currentOnTimeout()
-    })
+//    LaunchedEffect(Unit, block = {
+//        bookViewModel.getBooksList()
+////        currentOnTimeout()
+//    })
     
     Scaffold(
         topBar = {
@@ -154,6 +154,9 @@ fun TabBar(navController: NavController, navBarViewModel: NavBarViewModel) {
 fun LazyBooks(bookViewModel: BooksViewModel) {
 
     val booksList = bookViewModel.booksList
+//    by rememberSaveable {
+//        mutableStateOf(bookViewModel.booksList)
+//    }
 
     Column(modifier = Modifier.padding(start = 38.dp, end = 18.dp)) {
 
@@ -223,6 +226,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))}
 
     val num = (0..9).random()
+    bookViewModel.setBookPdfId(book, num)
     val urls = listOf(
         stringResource(R.string.pdf_image_1),
         stringResource(R.string.pdf_image_2),
@@ -237,6 +241,8 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
     )
 
     val pdfImage by rememberSaveable{ mutableStateOf(num) }
+    bookViewModel.setBookImageUrl(book, urls[pdfImage])
+    Log.d("pdf_image book ${book.id}", "${book.image_url}")
 
     Column(
         modifier = Modifier
@@ -246,7 +252,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
     {
         Box(modifier = Modifier){
             Image(
-                painter = rememberAsyncImagePainter(urls[pdfImage]),
+                painter = rememberAsyncImagePainter(book.image_url),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
@@ -254,6 +260,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     .width(140.dp)
             )
             val scope = rememberCoroutineScope()
+
             if (bookState == BookState.DEFAULT) {
                 IconButton(
                     onClick = {

@@ -6,4 +6,5 @@ sealed class Pages (val route: String) {
     object Login : Pages("login")
     object Books : Pages("books")
     object Settings : Pages("settings")
+    object Home : Pages("home")
 }

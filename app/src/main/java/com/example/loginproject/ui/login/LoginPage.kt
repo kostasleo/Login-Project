@@ -152,7 +152,7 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                 OutlinedButton(
                     onClick = {
 //                        credentialError = handleLogin(userId, password, context, viewModel, navController)
-                        navController.navigate(Pages.Books.route)
+                        navController.navigate(Pages.Home.route)
                     },
                     border = BorderStroke(1.dp, GreenMe),
                     shape = RoundedCornerShape(50),

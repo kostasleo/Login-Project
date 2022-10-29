@@ -61,4 +61,12 @@ class BooksViewModel: ViewModel(){
         book.state = state
         return book.state
     }
+
+    fun setBookPdfId(book: Book, image_id: Int) {
+        book.pdfId = image_id
+    }
+
+    fun setBookImageUrl(book: Book, image_url: String) {
+        book.image_url = image_url
+    }
 }

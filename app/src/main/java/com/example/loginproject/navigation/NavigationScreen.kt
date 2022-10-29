@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.loginproject.ui.home.BooksPage
+import com.example.loginproject.ui.home.HomePage
 import com.example.loginproject.ui.home.SettingsPage
 import com.example.loginproject.ui.login.LoginPage
 import com.example.loginproject.viewmodel.BooksViewModel
@@ -41,6 +42,9 @@ fun NavigationScreen(navController: NavHostController,
         }
         composable(route = Pages.Settings.route) {
             SettingsPage(navController = navController)
+        }
+        composable(route = Pages.Home.route){
+            HomePage(navController = navController, booksViewModel = booksViewModel)
         }
     }
 }
