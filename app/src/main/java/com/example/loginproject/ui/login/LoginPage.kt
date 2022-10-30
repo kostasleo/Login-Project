@@ -233,7 +233,7 @@ fun handleLogin(userId: String,
 //        viewModel.doLogin()
         if(userId == "TH1234" && password == "3NItas1!"){
             Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
-            navController.navigate(Pages.Books.route)
+            navController.navigate(Pages.Home.route)
             return false
         }
         // navigate to books

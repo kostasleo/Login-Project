@@ -20,16 +20,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.loginproject.navigation.NavigationScreen
 import com.example.loginproject.ui.home.BooksPage
 import com.example.loginproject.ui.login.LoginPage
-import com.example.loginproject.viewmodel.BooksViewModel
-import com.example.loginproject.viewmodel.LoginState
-import com.example.loginproject.viewmodel.LoginViewModel
-import com.example.loginproject.viewmodel.NavBarViewModel
+import com.example.loginproject.viewmodel.*
 
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels()
     private val booksViewModel: BooksViewModel by viewModels()
-    private val navBarViewModel: NavBarViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +40,8 @@ class MainActivity : ComponentActivity() {
                     NavigationScreen(
                         navController = navController,
                         loginViewModel = loginViewModel,
-                        booksViewModel = booksViewModel
+                        booksViewModel = booksViewModel,
+                        homeViewModel = homeViewModel
                     )
                 }
             }

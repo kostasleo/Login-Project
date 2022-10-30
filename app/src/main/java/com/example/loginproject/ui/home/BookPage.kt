@@ -53,99 +53,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
 
-//    var showLoadingPage by remember { mutableStateOf(true)}
+//    bookViewModel.deletePdfs()
+    LaunchedEffect(bookViewModel.isLoadingBooks) {
 
-//    LaunchedEffect(Unit, block = {
-//        bookViewModel.getBooksList()
-////        currentOnTimeout()
-//    })
-    
-    Scaffold(
-        topBar = {
-            TopLabel(type = "books") },
-        bottomBar = {
-            TabBar(navController = navController, navBarViewModel = NavBarViewModel()) }
-    ){
-        LazyBooks(bookViewModel = bookViewModel)
-    }
-}
+        if(!bookViewModel.firstLoadingBooks){// and !bookViewModel.isLoadingBooks){
+            bookViewModel.setBookPdfs()
+            bookViewModel.deletePdfs()
+            bookViewModel.firstLoadingBooks = true
 
-@Composable
-fun TabBar(navController: NavController, navBarViewModel: NavBarViewModel) {
-    var selectedPage by remember { mutableStateOf(0) }
-    val items = listOf(
-        Screen.Books,
-        Screen.Settings
-    )
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(104.dp)) {
-        // Tabs Bg image and wave image
-        Image(
-            painter = painterResource(R.drawable.tabs_bg),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Image(
-            painter = painterResource(R.drawable.tabs_wave),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth()
-        )
-        BottomNavigation(
-            backgroundColor = Color.Transparent,
-            modifier = Modifier.fillMaxSize(),
-            elevation = 0.dp
-        ){
-
-                BottomNavigationItem(
-                    selected = selectedPage == 0,
-                    selectedContentColor = GreenMe,
-                    unselectedContentColor = DarkGrayMe,
-                    onClick = { navController.navigate(Pages.Books.route) {launchSingleTop = true} },
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_book),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(30.dp)
-                        )
-                    },
-//                modifier = Modifier.clickable(
-//                    interactionSource = MutableInteractionSource(),
-//                    indication = null
-                )
-                BottomNavigationItem(
-                    selected = true,
-                    onClick = {},
-                    icon = {
-                        Image(
-                            painter = painterResource(R.drawable.btn_pause),
-                            contentDescription = null,
-                            modifier = Modifier.size(80.dp),
-//                    tint = Color.White.copy(alpha =0.0f)
-                        )
-                    }
-                )
-                BottomNavigationItem(
-                    selected = selectedPage == 1,
-                    selectedContentColor = GreenMe,
-                    unselectedContentColor = DarkGrayMe,
-                    onClick = { navController.navigate(Pages.Settings.route){launchSingleTop = true} },
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_settings),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(30.dp)
-                        )
-                    }
-                )
-            }
         }
+    }
+
+
+        LazyBooks(bookViewModel = bookViewModel)
+//        SettingsPage(navController = navController, navBarViewModel = NavBarViewModel())
 //    }
 }
 
@@ -222,11 +143,19 @@ fun YearLabel(year:String) {
 @Composable
 fun Book(bookViewModel: BooksViewModel, book: Book) {
 
-    var bookState by rememberSaveable {
-        mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))}
+    var bookState by rememberSaveable{
+//        mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))
+        mutableStateOf(bookViewModel.getBookState(book))
+    }
 
+    if (bookState == null){
+        bookState = BookState.DEFAULT
+    }
+
+//    var bookState = bookViewModel.getBookState(book)
+
+//    if (bookViewModel.bo)
     val num = (0..9).random()
-    bookViewModel.setBookPdfId(book, num)
     val urls = listOf(
         stringResource(R.string.pdf_image_1),
         stringResource(R.string.pdf_image_2),
@@ -240,9 +169,19 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         stringResource(R.string.pdf_image_10),
     )
 
-    val pdfImage by rememberSaveable{ mutableStateOf(num) }
-    bookViewModel.setBookImageUrl(book, urls[pdfImage])
-    Log.d("pdf_image book ${book.id}", "${book.image_url}")
+    if(!book.changed) {
+        bookViewModel.setBookPdfId(book, num)
+        bookViewModel.setBookImageUrl(book, urls[num])
+        bookViewModel.setBookChanged(book)
+        bookViewModel.changeBookState(book,BookState.DEFAULT)
+    }
+//
+//    val pdfImage by rememberSaveable{ mutableStateOf(num) }
+//    Log.d("pdf_image book ${book.id}", "${book.image_url}")
+
+//    var bookState by remember {
+//        mutableStateOf(book.state)
+//    }
 
     Column(
         modifier = Modifier
@@ -358,72 +297,72 @@ fun DefaultPreview() {
 }
 
 
-@Composable
-fun TabBar1(navController: NavController, navBarViewModel: NavBarViewModel) {
-    // state of pressed button
-    var selectedPage by remember { mutableStateOf(0) }
-
-    Surface(
-        color = Color.White.copy(alpha =0.0f),
-        modifier = Modifier
-            .height(105.dp)
-            .fillMaxWidth()
-    ) {
-        Box(modifier = Modifier){
-            // Tabs Bg image and wave image
-            Image(painter = painterResource(R.drawable.tabs_bg),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth())
-            Image(painter = painterResource(R.drawable.tabs_wave),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth())
-
-            // Buttons
-
-            IconButton(
-                onClick = {  },
-                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
-            {
-                Icon(
-                    painter = painterResource(R.drawable.ic_book),
-                    contentDescription = null,
-                    tint = GreenMe,
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(30.dp)
-                )
-            }
-            IconButton(
-                onClick = { },
-                modifier = Modifier
-                    .padding(top = 18.dp, start = 160.dp)
-                    .size(80.dp))
-            {
-                Image(
-                    painter = painterResource(R.drawable.btn_pause),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp),
-//                    tint = Color.White.copy(alpha =0.0f)
-                )
-            }
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
-            {
-                Icon(
-                    painter = painterResource(R.drawable.ic_settings_sel),
-                    contentDescription = null,
-                    tint = DarkGrayMe,
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(30.dp)
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun TabBar1(navController: NavController, navBarViewModel: NavBarViewModel) {
+//    // state of pressed button
+//    var selectedPage by remember { mutableStateOf(0) }
+//
+//    Surface(
+//        color = Color.White.copy(alpha =0.0f),
+//        modifier = Modifier
+//            .height(105.dp)
+//            .fillMaxWidth()
+//    ) {
+//        Box(modifier = Modifier){
+//            // Tabs Bg image and wave image
+//            Image(painter = painterResource(R.drawable.tabs_bg),
+//                contentDescription = null,
+//                contentScale = ContentScale.FillWidth,
+//                modifier = Modifier.fillMaxWidth())
+//            Image(painter = painterResource(R.drawable.tabs_wave),
+//                contentDescription = null,
+//                contentScale = ContentScale.FillWidth,
+//                modifier = Modifier.fillMaxWidth())
+//
+//            // Buttons
+//
+//            IconButton(
+//                onClick = {  },
+//                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
+//            {
+//                Icon(
+//                    painter = painterResource(R.drawable.ic_book),
+//                    contentDescription = null,
+//                    tint = GreenMe,
+//                    modifier = Modifier
+//                        .height(30.dp)
+//                        .width(30.dp)
+//                )
+//            }
+//            IconButton(
+//                onClick = { },
+//                modifier = Modifier
+//                    .padding(top = 18.dp, start = 160.dp)
+//                    .size(80.dp))
+//            {
+//                Image(
+//                    painter = painterResource(R.drawable.btn_pause),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(80.dp),
+////                    tint = Color.White.copy(alpha =0.0f)
+//                )
+//            }
+//            IconButton(
+//                onClick = { /*TODO*/ },
+//                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
+//            {
+//                Icon(
+//                    painter = painterResource(R.drawable.ic_settings_sel),
+//                    contentDescription = null,
+//                    tint = DarkGrayMe,
+//                    modifier = Modifier
+//                        .height(30.dp)
+//                        .width(30.dp)
+//                )
+//            }
+//        }
+//    }
+//}
 
 
 

@@ -50,9 +50,9 @@ class LoginViewModel : ViewModel() {
             try {
                 val token = apiService.postLogin(loginState.value)
                 isLoggedIn.value = true
-                Log.e("token", "$token")
+                Log.d("token", "$token")
             } catch (err: Exception) {
-                Log.e("login-err", err.message.toString())
+                Log.d("login-err", err.message.toString())
             }
         }
     }

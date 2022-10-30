@@ -11,14 +11,13 @@ import com.example.loginproject.ui.home.BooksPage
 import com.example.loginproject.ui.home.HomePage
 import com.example.loginproject.ui.home.SettingsPage
 import com.example.loginproject.ui.login.LoginPage
-import com.example.loginproject.viewmodel.BooksViewModel
-import com.example.loginproject.viewmodel.LoginState
-import com.example.loginproject.viewmodel.LoginViewModel
+import com.example.loginproject.viewmodel.*
 
 @Composable
 fun NavigationScreen(navController: NavHostController,
                      loginViewModel: LoginViewModel,
-                     booksViewModel: BooksViewModel)
+                     booksViewModel: BooksViewModel,
+                     homeViewModel: HomeViewModel)
 {
     val loggedIn = loginViewModel.isLogged()
 
@@ -35,16 +34,17 @@ fun NavigationScreen(navController: NavHostController,
                 navController = navController
             )
         }
-        composable(route = Pages.Books.route) {
-            BooksPage(
-                navController = navController,
-                bookViewModel = booksViewModel)
-        }
-        composable(route = Pages.Settings.route) {
-            SettingsPage(navController = navController)
-        }
         composable(route = Pages.Home.route){
-            HomePage(navController = navController, booksViewModel = booksViewModel)
+            HomePage(navController = navController, homeViewModel = homeViewModel, booksViewModel = booksViewModel )
         }
+//        composable(route = Pages.Books.route) {
+//            BooksPage(
+//                navController = navController,
+//                bookViewModel = booksViewModel)
+//        }
+//        composable(route = Pages.Settings.route) {
+//            SettingsPage(navController = navController, navBarViewModel = navBarViewModel)
+//        }
+
     }
 }

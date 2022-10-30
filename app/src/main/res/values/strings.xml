@@ -25,4 +25,8 @@
     <string id="10" name="pdf_image_10">"https://imgs.search.brave.com/99PCpQuWWNB0flrzz-egRchigpH5rTm9v-QCapxKVjk/rs:fit:260:280:1/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzLzg3LzQz/Lzk2Lzg3NDM5NmNi/ZGNiYThkNDZjOTA4/MzBiYTk2ZTA3MTNj/LmpwZw"</string>
 
     <string name="settings_text_label">Ρυθμίσεις</string>
+    <string name="notifications_label">Ειδοποιήσεις</string>
+    <string name="delete_books_label">Διαγραφή όλων των περιοδικών</string>
+    <string name="logout_label">Αποσύνδεση</string>
+    <string name="loading_label">Παρακαλώ περιμένετε...</string>
 </resources>

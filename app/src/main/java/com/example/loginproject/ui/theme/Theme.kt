@@ -5,6 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -56,3 +58,16 @@ fun MyColors (
     textColor = textColor,
     backgroundColor = backgroundColor
 )
+
+object ClearRippleTheme : RippleTheme {
+    @Composable
+    override fun defaultColor(): Color = Color.Transparent
+
+    @Composable
+    override fun rippleAlpha() = RippleAlpha(
+        draggedAlpha = 0.0f,
+        focusedAlpha = 0.0f,
+        hoveredAlpha = 0.0f,
+        pressedAlpha = 0.0f,
+    )
+}
