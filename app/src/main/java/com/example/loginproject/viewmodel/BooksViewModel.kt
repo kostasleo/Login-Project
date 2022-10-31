@@ -1,16 +1,11 @@
 package com.example.loginproject.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.loginproject.R
 import com.example.loginproject.api.ApiConstants.TOKEN
 import com.example.loginproject.api.ApiService
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.http.Url
-import java.net.URL
 import java.util.Date
 
 enum class BookState {
@@ -30,12 +25,13 @@ data class Book(
 
 class BooksViewModel: ViewModel(){
     private val _booksList = mutableStateListOf<Book>()
-    var errorMessage: String by mutableStateOf("")
     val booksList: List<Book>?
         get() = _booksList
     var isLoadingBooks by mutableStateOf(false)
     var firstLoadingBooks by mutableStateOf(false)
+    var errorMessage: String by mutableStateOf("")
 
+    // making books request
     fun getBooksList() {
         viewModelScope.launch {
             val apiService = ApiService.getInstance()
@@ -60,43 +56,6 @@ class BooksViewModel: ViewModel(){
         return result
     }
 
-    fun getBook(id: Int) : Book{
-        return _booksList[id]
-    }
-
-    fun setBookPdfs() {
-//        val books = booksViewModel.booksList
-//        if (books != null) {
-
-            for (book in _booksList!!) {
-                val num = (0..9).random()
-//                booksViewModel.setBookPdfId(book, num)
-                book.pdfId = num
-                val urls = listOf(
-                    R.string.pdf_image_1,
-                    R.string.pdf_image_2,
-                    R.string.pdf_image_3,
-                    R.string.pdf_image_4,
-                    R.string.pdf_image_5,
-                    R.string.pdf_image_6,
-                    R.string.pdf_image_7,
-                    R.string.pdf_image_8,
-                    R.string.pdf_image_9,
-                    R.string.pdf_image_10,
-                )
-//                booksViewModel.setBookImageUrl(book, urls[num].toString())
-                book.image_url = urls[num].toString()
-                book.state = BookState.DEFAULT
-                Log.d("pdfs", "loaded pdfs")
-            }
-        }
-
-    fun deletePdfs() {
-        for (book in _booksList!!) {
-            book.state = BookState.DEFAULT
-        }
-    }
-
     fun getBookState(book: Book): BookState{
         return book.state
     }
@@ -112,11 +71,15 @@ class BooksViewModel: ViewModel(){
 
     fun setBookImageUrl(book: Book, image_url: String) {
         book.image_url = image_url
-        Log.d("image_url", "${book.image_url}")
     }
 
     fun setBookChanged(book: Book) {
         book.changed = true
-        Log.d("changed", "changed book ${book.id}")
+    }
+
+    fun deletePdfs() {
+        for (book in _booksList) {
+            book.state = BookState.DEFAULT
+        }
     }
 }

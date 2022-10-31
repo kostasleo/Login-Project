@@ -1,7 +1,5 @@
 package com.example.loginproject.ui.home
 
-import android.service.autofill.OnClickAction
-import android.text.style.AlignmentSpan
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -23,13 +21,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.loginproject.R
 import com.example.loginproject.navigation.Pages
-import com.example.loginproject.ui.login.TopLabel
 import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.viewmodel.HomeViewModel
-import com.example.loginproject.viewmodel.Screen
-import kotlinx.coroutines.delay
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun SettingsPage(
@@ -37,18 +31,13 @@ fun SettingsPage(
     homeViewModel: HomeViewModel,
     booksViewModel: BooksViewModel
 ) {
-
-    var notificationsOn by remember {
-        mutableStateOf(homeViewModel.notificationsOn)
-    }
-
     Column(modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)) {
-        SettingItem(homeViewModel,type = "notification", onClickAction = { homeViewModel.notificationsOn = !homeViewModel.notificationsOn })
-        SettingItem(homeViewModel,type = "delete", onClickAction = { booksViewModel.deletePdfs() })
-        SettingItem(homeViewModel,type = "logout", onClickAction = {
-            navController.navigate(Pages.Login.route)
-//            homeViewModel.reload()
-        })
+        SettingItem(homeViewModel,type = "notification",
+            onClickAction = { homeViewModel.notificationsOn = !homeViewModel.notificationsOn })
+        SettingItem(homeViewModel,type = "delete",
+            onClickAction = { booksViewModel.deletePdfs() })
+        SettingItem(homeViewModel,type = "logout",
+            onClickAction = {navController.navigate(Pages.Login.route)})
     }
 }
 
@@ -56,9 +45,6 @@ fun SettingsPage(
 fun SettingItem(homeViewModel: HomeViewModel,type: String, onClickAction: () -> Unit) {
 
     var text: String = ""
-    var notificationOn by remember {
-        mutableStateOf(homeViewModel.notificationsOn)
-    }
     when (type) {
         "notification" -> text = stringResource(R.string.notifications_label)
         "delete" -> text = stringResource(R.string.delete_books_label)
@@ -79,13 +65,15 @@ fun SettingItem(homeViewModel: HomeViewModel,type: String, onClickAction: () -> 
         }
         Spacer(modifier = Modifier.weight(1f))
         if (type == "notification") {
-//            RadioButton(selected = true, onClick = { onClickAction })
+            // custom switch button for notification label
             CustomSwitchButton(
                 switchPadding = 5.dp,
                 buttonWidth = 69.dp,
                 buttonHeight = 40.dp,
                 value = homeViewModel.notificationsOn,
-                onClickAction = {homeViewModel.notificationsOn = !homeViewModel.notificationsOn})
+                onClickAction = {
+                    homeViewModel.notificationsOn = !homeViewModel.notificationsOn
+                })
         }
     }
     Spacer(modifier = Modifier.height(20.dp))
@@ -129,6 +117,7 @@ fun CustomSwitchButton(
         )
     )
 
+    // Switch Button UI
     Box(
         modifier = Modifier
             .width(buttonWidth)

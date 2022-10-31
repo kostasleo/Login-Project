@@ -30,18 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.loginproject.R
-import com.example.loginproject.navigation.Pages
 import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.ui.theme.MyColors
 import com.example.loginproject.viewmodel.LoginViewModel
-import java.util.regex.Pattern
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginPage(colors: TextFieldColors = MyColors(),
-              context: Context,
-              viewModel: LoginViewModel,
-              navController: NavController
+fun LoginPage(
+    colors: TextFieldColors = MyColors(),
+    context: Context,
+    viewModel: LoginViewModel,
+    navController: NavController
 ) {
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -50,6 +50,7 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
     val focusManager = LocalFocusManager.current
 
     var credentialError by rememberSaveable { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -73,7 +74,6 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     InputLabelWithInfo(type = stringResource(R.string.user_id_label), 250)
                 }
 
@@ -92,10 +92,12 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                         .background(DarkGrayMe)
                         .fillMaxWidth()
                         .height(52.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Next
+                    ),
                     keyboardActions = KeyboardActions(
-                        onDone = { focusManager.clearFocus()}),
+                        onDone = { focusManager.clearFocus() }),
                     colors = colors,
                     isError = credentialError
                 )
@@ -108,6 +110,7 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // Toggle password visible button
                     InputLabelWithInfo(type = stringResource(R.string.password_label_gr), 0)
                     TextButton(
                         onClick = { passwordVisible = !passwordVisible },
@@ -136,10 +139,12 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                         .background(DarkGrayMe)
                         .fillMaxWidth()
                         .height(52.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     keyboardActions = KeyboardActions(
-                        onDone = { focusManager.clearFocus()}
+                        onDone = { focusManager.clearFocus() }
                     ),
                     colors = colors,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -151,8 +156,11 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                 // Login Button
                 OutlinedButton(
                     onClick = {
-//                        credentialError = handleLogin(userId, password, context, viewModel, navController)
-                        navController.navigate(Pages.Home.route)
+                        // a local coroutine scope required to call suspend function handleLogin from the LoginViewModel
+                        scope.launch {
+                            credentialError =
+                                viewModel.handleLogin(userId, password, viewModel, navController)
+                        }
                     },
                     border = BorderStroke(1.dp, GreenMe),
                     shape = RoundedCornerShape(50),
@@ -167,15 +175,18 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                     )
                 }
 
-                // Credentials Error
-                if(credentialError){
+                // Credentials Error Dialog
+                if (credentialError) {
                     AlertDialog(onDismissRequest = { credentialError = false },
                         shape = RoundedCornerShape(size = 12.dp),
                         buttons = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(15.dp)) {
+                                    .padding(15.dp)
+                            )
+                            {
                                 Text(
                                     text = "Λανθασμένα στοιχεία",
                                     color = Color.White, fontSize = 22.sp,
@@ -190,58 +201,25 @@ fun LoginPage(colors: TextFieldColors = MyColors(),
                                     textAlign = TextAlign.Center,
                                     lineHeight = 21.sp,
                                     modifier = Modifier.fillMaxWidth()
-                                )}
-                                TextButton(
-                                    onClick = { credentialError = false },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(60.dp),
-                                ) {
-                                    Text(
-                                        text = "Επιστροφή",
-                                        color = GreenMe, fontSize = 20.sp,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                }
-
+                                )
+                            }
+                            TextButton(
+                                onClick = { credentialError = false },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp),
+                            ) {
+                                Text(
+                                    text = "Επιστροφή",
+                                    color = GreenMe, fontSize = 20.sp,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
                         }
                     )
                 }
             }
         }
-    }
-}
-
-fun handleLogin(userId: String,
-                password: String,
-                context: Context,
-                viewModel: LoginViewModel,
-                navController: NavController) : Boolean
-{
-    val userIdPattern = "^[A-Z][A-Z][0-9]{4}\$"
-    val isUserIdValid = Pattern.matches(userIdPattern, userId)
-
-    val passwordPattern = "^(?=.*[!@#\$%^()-=+)&+=])(?=.*[A-Z].*[A-Z].*)(?=.*[a-z].*[a-z].*[a-z].*)(?=.*[0-9].*[0-9].*).{8,}$"
-    val isPasswordValid = Pattern.matches(passwordPattern, password)
-
-    if (isPasswordValid && isUserIdValid) {
-
-        viewModel.setUserId(userId)
-        viewModel.setPassword(password)
-
-        // make login request
-//        viewModel.doLogin()
-        if(userId == "TH1234" && password == "3NItas1!"){
-            Toast.makeText(context, "Valid credentials", Toast.LENGTH_SHORT).show()
-            navController.navigate(Pages.Home.route)
-            return false
-        }
-        // navigate to books
-//        if(viewModel.isLogged()){
-//      { launchSingleTop = true }
-        return true
-    } else {
-        return true
     }
 }
 
@@ -273,6 +251,7 @@ fun TopLabel(type: String) {
     }
 }
 
+// passing a pad to add at the bottom of the alert dialog (didn't find better way)
 @Composable
 fun InputLabelWithInfo(type: String, pad: Int) {
     var showInfo by remember { mutableStateOf(false) }
@@ -305,7 +284,8 @@ fun InputLabelWithInfo(type: String, pad: Int) {
             } else if (type == stringResource(R.string.user_id_label)) {
                 infoMessage = stringResource(R.string.userid_info_gr)
             }
-            AlertDialog(onDismissRequest = { showInfo = false },
+            AlertDialog(
+                onDismissRequest = { showInfo = false },
                 shape = RoundedCornerShape(size = 12.dp),
                 buttons = {
                     TextButton(

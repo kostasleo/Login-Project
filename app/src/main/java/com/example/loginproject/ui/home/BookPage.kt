@@ -1,86 +1,42 @@
 package com.example.loginproject.ui.home
 
-import android.annotation.SuppressLint
-import android.graphics.Color.alpha
-import android.util.Log
-import android.widget.ImageButton
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.modifier.modifierLocalOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import com.example.loginproject.ui.login.LoginPage
-import com.example.loginproject.ui.login.TopLabel
-import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.R
-import com.example.loginproject.navigation.Pages
-import com.example.loginproject.ui.theme.GreenMe
-import com.example.loginproject.ui.theme.LoginProjectTheme
 import com.example.loginproject.viewmodel.*
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun BooksPage(navController: NavController, bookViewModel: BooksViewModel) {
+fun BooksPage(bookViewModel: BooksViewModel) {
 
-//    bookViewModel.deletePdfs()
-    LaunchedEffect(bookViewModel.isLoadingBooks) {
-
-        if(!bookViewModel.firstLoadingBooks){// and !bookViewModel.isLoadingBooks){
-            bookViewModel.setBookPdfs()
-            bookViewModel.deletePdfs()
-            bookViewModel.firstLoadingBooks = true
-
-        }
-    }
-
-
-        LazyBooks(bookViewModel = bookViewModel)
-//        SettingsPage(navController = navController, navBarViewModel = NavBarViewModel())
-//    }
+    // just a scrollable list of books
+    LazyBooks(bookViewModel = bookViewModel)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)    // needed for LazyVerticalGrid
 @Composable
 fun LazyBooks(bookViewModel: BooksViewModel) {
 
     val booksList = bookViewModel.booksList
-//    by rememberSaveable {
-//        mutableStateOf(bookViewModel.booksList)
-//    }
 
     Column(modifier = Modifier.padding(start = 38.dp, end = 18.dp)) {
 
+        // Lazy (scrollable) grid of books by year
         if (booksList != null) {
             LazyVerticalGrid(
                 GridCells.Adaptive(140.dp),
@@ -89,46 +45,49 @@ fun LazyBooks(bookViewModel: BooksViewModel) {
                 modifier = Modifier
                     .fillMaxHeight()
             ) {
-                item(span = {GridItemSpan(2)}) {
+                // 2020
+                item(span = { GridItemSpan(2) }) {
                     YearLabel(year = "2020")
                 }
-                items(bookViewModel.getBooksByYear(bookViewModel.booksList,"2020")) { book ->
+                items(bookViewModel.getBooksByYear(bookViewModel.booksList, "2020")) { book ->
                     Book(bookViewModel, book)
                 }
-                item(span = { GridItemSpan(2)}){
+                item(span = { GridItemSpan(2) }) {
                     Spacer(modifier = Modifier.height(38.dp))
                 }
 
-                item(span = { GridItemSpan(2)}) {
+                // 2019
+                item(span = { GridItemSpan(2) }) {
                     YearLabel(year = "2019")
                 }
-                items(bookViewModel.getBooksByYear(bookViewModel.booksList,"2019")) { book ->
+                items(bookViewModel.getBooksByYear(bookViewModel.booksList, "2019")) { book ->
                     Book(bookViewModel, book)
                 }
 
-                item(span = { GridItemSpan(2)}) {
+                // 2018
+                item(span = { GridItemSpan(2) }) {
                     YearLabel(year = "2018")
                 }
-                items(bookViewModel.getBooksByYear(bookViewModel.booksList,"2018")) { book ->
+                items(bookViewModel.getBooksByYear(bookViewModel.booksList, "2018")) { book ->
                     Book(bookViewModel, book)
                 }
 
-                item(span = { GridItemSpan(2)}) {
+                // 2010
+                item(span = { GridItemSpan(2) }) {
                     YearLabel(year = "2010")
                 }
-                items(bookViewModel.getBooksByYear(bookViewModel.booksList,"2010")) { book ->
+                items(bookViewModel.getBooksByYear(bookViewModel.booksList, "2010")) { book ->
                     Book(bookViewModel, book)
                 }
-          }
+            }
         } else {
             Text(bookViewModel.errorMessage)
         }
-        YearLabel(year = "2022")
     }
 }
 
 @Composable
-fun YearLabel(year:String) {
+fun YearLabel(year: String) {
     Text(
         text = year,
         fontSize = 24.sp,
@@ -143,18 +102,22 @@ fun YearLabel(year:String) {
 @Composable
 fun Book(bookViewModel: BooksViewModel, book: Book) {
 
-    var bookState by rememberSaveable{
-//        mutableStateOf(bookViewModel.changeBookState(book,BookState.DEFAULT))
+    // handing frozen "download" of books on recomposition
+    LaunchedEffect(Unit){
+        if (book.state != BookState.DEFAULT){
+            bookViewModel.changeBookState(book, BookState.DOWNLOADED)
+        }
+    }
+
+    var bookState by rememberSaveable {
         mutableStateOf(bookViewModel.getBookState(book))
     }
 
-    if (bookState == null){
+    if (bookState == null) {
         bookState = BookState.DEFAULT
     }
 
-//    var bookState = bookViewModel.getBookState(book)
-
-//    if (bookViewModel.bo)
+    // getting a random number to pick one of available image urls
     val num = (0..9).random()
     val urls = listOf(
         stringResource(R.string.pdf_image_1),
@@ -169,27 +132,23 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         stringResource(R.string.pdf_image_10),
     )
 
-    if(!book.changed) {
+    // setting new image urls and to changed, so they remain as is
+    if (!book.changed) {
         bookViewModel.setBookPdfId(book, num)
         bookViewModel.setBookImageUrl(book, urls[num])
         bookViewModel.setBookChanged(book)
-        bookViewModel.changeBookState(book,BookState.DEFAULT)
+        bookViewModel.changeBookState(book, BookState.DEFAULT)
     }
-//
-//    val pdfImage by rememberSaveable{ mutableStateOf(num) }
-//    Log.d("pdf_image book ${book.id}", "${book.image_url}")
 
-//    var bookState by remember {
-//        mutableStateOf(book.state)
-//    }
-
+    // Book UI
     Column(
         modifier = Modifier
             .height(230.dp)
             .width(140.dp)
     )
     {
-        Box(modifier = Modifier){
+        Box(modifier = Modifier) {
+            // book image
             Image(
                 painter = rememberAsyncImagePainter(book.image_url),
                 contentDescription = null,
@@ -200,6 +159,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
             )
             val scope = rememberCoroutineScope()
 
+            // handle default book state UI
             if (bookState == BookState.DEFAULT) {
                 IconButton(
                     onClick = {
@@ -226,6 +186,7 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     )
                 }
             }
+            // handle downloading book state UI
             if (book.state == BookState.DOWNLOADING1) {
                 val image = painterResource(R.drawable.downloading1)
                 Box(modifier = Modifier.padding(top = 166.dp)) {
@@ -250,8 +211,9 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                     )
                 }
             }
+            // handle downloaded book state UI
             if (book.state == BookState.DOWNLOADED) {
-                Box(modifier = Modifier.padding(top = 130.dp, start = 91.dp)){
+                Box(modifier = Modifier.padding(top = 130.dp, start = 91.dp)) {
                     Image(
                         painter = painterResource(R.drawable.downloaded_bg),
                         contentDescription = null,
@@ -259,22 +221,23 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
                             .height(50.dp)
                             .width(50.dp)
                     )
-                    Box(modifier = Modifier.padding(top = 26.dp, start = 24.dp)){
+                    Box(modifier = Modifier.padding(top = 26.dp, start = 24.dp)) {
 
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check_w),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .height(20.dp)
-                            .width(20.dp),
-                        tint = Color.White,
-                    )
+                        Icon(
+                            painter = painterResource(R.drawable.ic_check_w),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(20.dp),
+                            tint = Color.White,
+                        )
                     }
 
                 }
             }
         }
 
+        // book title, single line
         Text(
             text = book.title,
             modifier = Modifier
@@ -286,103 +249,3 @@ fun Book(bookViewModel: BooksViewModel, book: Book) {
         )
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    LoginProjectTheme {
-//        BooksPage(navController = rememberNavController(), bookViewModel = BooksViewModel())
-//        Book(bookViewModel = BooksViewModel(), book = Book(bookViewModel.))
-    }
-}
-
-
-//@Composable
-//fun TabBar1(navController: NavController, navBarViewModel: NavBarViewModel) {
-//    // state of pressed button
-//    var selectedPage by remember { mutableStateOf(0) }
-//
-//    Surface(
-//        color = Color.White.copy(alpha =0.0f),
-//        modifier = Modifier
-//            .height(105.dp)
-//            .fillMaxWidth()
-//    ) {
-//        Box(modifier = Modifier){
-//            // Tabs Bg image and wave image
-//            Image(painter = painterResource(R.drawable.tabs_bg),
-//                contentDescription = null,
-//                contentScale = ContentScale.FillWidth,
-//                modifier = Modifier.fillMaxWidth())
-//            Image(painter = painterResource(R.drawable.tabs_wave),
-//                contentDescription = null,
-//                contentScale = ContentScale.FillWidth,
-//                modifier = Modifier.fillMaxWidth())
-//
-//            // Buttons
-//
-//            IconButton(
-//                onClick = {  },
-//                modifier = Modifier.padding(top = 40.dp, start = 40.dp))
-//            {
-//                Icon(
-//                    painter = painterResource(R.drawable.ic_book),
-//                    contentDescription = null,
-//                    tint = GreenMe,
-//                    modifier = Modifier
-//                        .height(30.dp)
-//                        .width(30.dp)
-//                )
-//            }
-//            IconButton(
-//                onClick = { },
-//                modifier = Modifier
-//                    .padding(top = 18.dp, start = 160.dp)
-//                    .size(80.dp))
-//            {
-//                Image(
-//                    painter = painterResource(R.drawable.btn_pause),
-//                    contentDescription = null,
-//                    modifier = Modifier.size(80.dp),
-////                    tint = Color.White.copy(alpha =0.0f)
-//                )
-//            }
-//            IconButton(
-//                onClick = { /*TODO*/ },
-//                modifier = Modifier.padding(top = 40.dp, start = 300.dp))
-//            {
-//                Icon(
-//                    painter = painterResource(R.drawable.ic_settings_sel),
-//                    contentDescription = null,
-//                    tint = DarkGrayMe,
-//                    modifier = Modifier
-//                        .height(30.dp)
-//                        .width(30.dp)
-//                )
-//            }
-//        }
-//    }
-//}
-
-
-
-//    Column(modifier = Modifier.fillMaxSize()) {
-//
-//        TopLabel(type = "books")
-//
-//
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = DarkGrayMe
-//        ) {
-//            Column(modifier = Modifier.fillMaxSize()) {
-//
-//                if (showLoadingPage) {
-//                    LoadingPage(bookViewModel = bookViewModel, onTimeout = { showLoadingPage = false })
-//                } else {
-//                    LazyBooks(bookViewModel)
-//                }
-//
-//            }
-//        }
-//    }

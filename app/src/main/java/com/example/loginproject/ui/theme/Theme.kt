@@ -61,7 +61,7 @@ fun MyColors (
 
 object ClearRippleTheme : RippleTheme {
     @Composable
-    override fun defaultColor(): Color = Color.Transparent
+    override fun defaultColor(): Color = Color.Unspecified
 
     @Composable
     override fun rippleAlpha() = RippleAlpha(

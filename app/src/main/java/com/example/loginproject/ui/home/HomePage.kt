@@ -1,16 +1,13 @@
 package com.example.loginproject.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,32 +16,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.loginproject.R
-import com.example.loginproject.navigation.Pages
 import com.example.loginproject.ui.login.TopLabel
 import com.example.loginproject.ui.theme.ClearRippleTheme
 import com.example.loginproject.ui.theme.DarkGrayMe
 import com.example.loginproject.ui.theme.GreenMe
 import com.example.loginproject.viewmodel.BooksViewModel
 import com.example.loginproject.viewmodel.HomeViewModel
-import com.example.loginproject.viewmodel.Screen
 
 @Composable
-fun HomePage(navController: NavController, homeViewModel: HomeViewModel, booksViewModel: BooksViewModel ) {
+fun HomePage(
+    navController: NavController,
+    homeViewModel: HomeViewModel,
+    booksViewModel: BooksViewModel
+) {
+    // on home page load, set book page as active
     LaunchedEffect(Unit) {
         homeViewModel.reload()
-        if (!homeViewModel.homeState.value.firstLoaded ){//&& !booksViewModel.firstLoadingBooks){
+
+        // on first load, make books request
+        if (!homeViewModel.homeState.value.firstLoaded) {
             booksViewModel.getBooksList()
-            Log.d("booksReq", "books request")
         }
-//        currentOnTimeout()
-//        homeViewModel.homeState.value.firstLoaded = true    // make func
-        homeViewModel.firstLoad()
+        homeViewModel.firstLoad()       // first load done
     }
 
-//    if (booksViewModel.firstLoadingBooks && !homeViewModel.homeState.value.firstLoaded)
-//        booksViewModel.deletePdfs()
-
-    if(booksViewModel.isLoadingBooks){
+    // loading page until books are loaded
+    if (booksViewModel.isLoadingBooks) {
         Text(
             text = stringResource(R.string.loading_label),
             fontSize = 25.sp,
@@ -54,39 +51,42 @@ fun HomePage(navController: NavController, homeViewModel: HomeViewModel, booksVi
             modifier = Modifier
                 .padding(top = 200.dp)
                 .fillMaxWidth()
-            )
+        )
     } else {
-
-    Scaffold(
-        topBar = {
-            TopLabel(type = homeViewModel.activePageName) },
-        bottomBar = {
-            TabBar(navController = navController, homeViewModel = homeViewModel) }
-    ){
-        if (homeViewModel.activePageName == "books"){
-            BooksPage(navController = navController, bookViewModel = booksViewModel)
-        } else if (homeViewModel.activePageName == "settings") {
-            SettingsPage(navController = navController, homeViewModel = homeViewModel, booksViewModel = booksViewModel)
+        // home page having top and bottom bar according to active page
+        Scaffold(
+            topBar = {
+                TopLabel(type = homeViewModel.activePageName)
+            },
+            bottomBar = {
+                TabBar(homeViewModel = homeViewModel)
+            }
+        ) {
+            // decide which page to show
+            if (homeViewModel.activePageName == "books") {
+                BooksPage(
+                    bookViewModel = booksViewModel
+                )
+            } else if (homeViewModel.activePageName == "settings") {
+                SettingsPage(
+                    navController = navController,
+                    homeViewModel = homeViewModel,
+                    booksViewModel = booksViewModel
+                )
+            }
         }
-    }
-//        ) {
-//        navController.navigate(Pages.Books.route) {launchSingleTop = true}
     }
 }
 
 @Composable
-fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
-//    var selectedPage by remember { mutableStateOf(homeViewModel.homeState.value.activePage) }
-    var selectedPage by remember {
-        mutableStateOf(0)
-    }
-    val items = listOf(
-        Screen.Books,
-        Screen.Settings
-    )
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(104.dp)) {
+fun TabBar(homeViewModel: HomeViewModel) {
+    var selectedPage by remember { mutableStateOf(0) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(104.dp)
+    ) {
         // Tabs Bg image and wave image
         Image(
             painter = painterResource(R.drawable.tabs_bg),
@@ -100,8 +100,10 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth()
         )
-        CompositionLocalProvider(LocalRippleTheme provides ClearRippleTheme) {
 
+        // Bottom Navigation Items
+        // Custom Theme to avoid Ripple Effect onClick (not working)
+        CompositionLocalProvider(LocalRippleTheme provides ClearRippleTheme) {
 
             BottomNavigation(
                 backgroundColor = Color.Transparent,
@@ -109,6 +111,7 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
                 elevation = 0.dp
             ) {
 
+                // books Page Button
                 BottomNavigationItem(
                     selected = selectedPage == 0,
                     selectedContentColor = GreenMe,
@@ -116,7 +119,6 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
                     onClick = {
                         selectedPage = 0
                         homeViewModel.updateActivePage(0)
-//                    navController.navigate(Pages.Books.route) {launchSingleTop = true}
                     },
                     icon = {
                         Icon(
@@ -126,23 +128,25 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
                                 .height(30.dp)
                                 .width(30.dp)
                         )
-                    },
-//                modifier = Modifier.clickable(
-//                    interactionSource = MutableInteractionSource(),
-//                    indication = null
+                    }
                 )
+
+                // Play/Pause Button
+                val buttonImages = listOf(R.drawable.btn_play, R.drawable.btn_pause)
+                var buttonImage by remember { mutableStateOf(0) }
                 BottomNavigationItem(
                     selected = true,
-                    onClick = {},
+                    onClick = { buttonImage = if (buttonImage == 0) 1 else 0 },
                     icon = {
                         Image(
-                            painter = painterResource(R.drawable.btn_pause),
+                            painter = painterResource(buttonImages[buttonImage]),
                             contentDescription = null,
-                            modifier = Modifier.size(80.dp),
-//                    tint = Color.White.copy(alpha =0.0f)
+                            modifier = Modifier.size(80.dp)
                         )
                     }
                 )
+
+                // Settings Button
                 BottomNavigationItem(
                     selected = selectedPage == 1,
                     selectedContentColor = GreenMe,
@@ -150,7 +154,6 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
                     onClick = {
                         selectedPage = 1
                         homeViewModel.updateActivePage(1)
-//                    navController.navigate(Pages.Settings.route){launchSingleTop = true}
                     },
                     icon = {
                         Icon(
@@ -165,5 +168,4 @@ fun TabBar(navController: NavController, homeViewModel: HomeViewModel, ) {
             }
         }
     }
-//    }
 }
